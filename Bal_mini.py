@@ -174,6 +174,17 @@ def Balancing_Bank_Semafori(wsheet):
                 
                     
                 
+def Balancing_All(wbook):
+    
+    # запуск балансировщика на всех "банковских листах"
+    for name in wbook.get_sheet_names():
+        if name.startswith('B_') and name != 'B_ALL':
+            name.Activate # придумасть как это сделать
+            name.cell(row = 1, column = 1).activate # придумать как сделать
+            Balancing_Bank_Semafori(name)
+            
+
+
             
         
         
