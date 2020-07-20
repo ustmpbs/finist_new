@@ -115,6 +115,64 @@ def Balancing_Bank_Semafori(wsheet):
                         wsheet.cell(row = Bal_Result + 19 + p, column = ShiftT + t).value += Pre_Bal_m *  wsheet.cell(row = 38 + p, column = ShiftT + t).value / wsheet.cell(row = 45, column = ShiftT + t).value
                     Pre_Bal = Pre_Bal - Pre_Bal_m
                     wsheet.cell(row = Bal_Result + 26, column = ShiftT + t-1).value -= Pre_Bal_m
+                    
+                # 3) привлекаем по лимитам 
+                #   сначала РЕПО - минимум лимита и дисбаланса - 50:50 рубли и валюта
+                if Pre_Bal > delta and Lim_Repo > 0:
+                    Pre_Bal_m = min(Lim_Repo, Pre_Bal)
+                    
+                    wsheet.cell(row = Bal_Result + 33, column = ShiftT + t).value += Pre_Bal_m/2
+                    wsheet.cell(row = Bal_Result + 34, column = ShiftT + t).value += Pre_Bal_m/2
+                    
+                    Lim_Repo -= Pre_Bal_m
+                    Pre_Bal -= Pre_Bal_m
+                    
+                # затем смотрим групповые лимиты по резидентам - минимум дисбаланса и лимита                
+                if Pre_Bal > delta and Lim_Res > 0:
+                    Pre_Bal_m = min(Pre_Bal, Lim_Res)
+                    wsheet.cell(row = Bal_Result + 33, column = ShiftT + t).value += Pre_Bal_m
+                    Lim_Res -= Pre_Bal_m
+                    Pre_Bal -= Pre_Bal_m
+                 
+                # затем - групповые лимиты по нерезидентам - минимум лимита и дисбаланса (его остатка)
+                if Pre_Bal > delta and Lim_Foreign > 0:
+                    Pre_Bal_m = min(Lim_Foreign, Pre_Bal)
+                    
+                    wsheet.cell(row = Bal_Result + 34, column = ShiftT + t).value += Pre_Bal_m
+                    Lim_Foreign -= Pre_Bal_m
+                    Pre_Bal -= Pre_Bal_m
+                    
+                # потом - лимит ЦБ - миниму лимита и дисбаланса (его остатка)
+                if Pre_Bal > delta and Lim_CBR > 0:
+                    Pre_Bal_m = min(Pre_Bal, Lim_CBR)                    
+                    wsheet.cell(row = Bal_Result + 35, column = ShiftT + t).value += Pre_Bal_m
+                    
+                    Lim_CBR -= Pre_Bal_m
+                    Pre_Bal -= Pre_Bal_m
+                    
+                # 4) сокращаем выдачи кредитов
+                if Pre_Bal > delta and New_loans > 0:
+                    Pre_Bal_m = min(Pre_Bal, New_loans)
+                    for p in range(1, 16): # пропорционально их выдачам 
+                        wsheet.cell(row = Bal_Result + 2+p, column = ShiftT + t).value -= wsheet.cell(row = 21+p, column = ShiftT + t).value * Pre_Bal_m / wsheet.cell(row = 38, column = ShiftT + t).value
+                    Pre_Bal -= Pre_Bal_m
+                    New_Loans -= Pre_Bal_m
+                    
+                    # фиксируем отложенный спрос
+                    wsheet.cell(row = Bal_Result + 19, column = ShiftT + t).value += Pre_Bal_m
+                    
+                # 5) последний шаг - финансирование в статусе тех дефолта
+                if Pre_Bal > delta:
+                    wsheet.cell(row = Bal_Result + 37, column = ShiftT + t).value = 1
+                    wsheet.cell(row = Bal_Result + 35, column = ShiftT + t).value += Pre_Bal_m
+            
+            Worksheets(ActiveSheet.Name).Calculate
+            Pre_Bal = wsheet.cell(row = 2, column = ShiftT + t).value
+            i += 1
+                    
+                
+                
+                    
                 
             
         
