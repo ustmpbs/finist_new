@@ -20,7 +20,7 @@ def calc_variations(wsheet):
     
     for Calc in range(1, NCalc):
         
-        Application.Calculation = xlManual
+        Application.Calculation = xlManual # придумать
         wb['Param'].cell(row = 2, column =1).value = wb['M'].cell(row =Calc+3, column = 2).value 
         wb['Param'].cell(row = 2, column =23).value = wb['M'].cell(row =Calc+3, column = 3).value 
         wb['Param'].cell(row = 2, column =24).value = wb['M'].cell(row =Calc+3, column = 4).value
@@ -28,7 +28,7 @@ def calc_variations(wsheet):
         Balancing_all(wsheet)
         B_ALL_2 = wb.copy_worksheet('B_ALL')
         ws = wb['B_ALL_2'].active
-        ws.title = wb['M'].cell(row = Calc +3, 5).value
+        ws.title = wb['M'].cell(row = Calc +3, column = 5).value
         # фиксация результатов расчета
         
     

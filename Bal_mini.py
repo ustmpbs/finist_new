@@ -10,6 +10,8 @@ import os
 import pandas as pd
 import numpy as np
 import xlwings as xlw
+import pyxll as px
+from pyxll import xl_macro, xl_app
 
 os.chdir(r'D:\Bank of Russia\finist_new')
 
@@ -21,6 +23,11 @@ Bal_Rows = 81
 
 delta = 0.1
     
+
+os.chdir(r"D:\Bank of Russia\finist_new")
+
+
+wb = opx.load_workbook("finist_new.xlsm")
 
 
 # function Balancing_Bank_Semafori() as in Bal_mini
@@ -183,6 +190,10 @@ def Balancing_All(wbook):
             name.cell(row = 1, column = 1).activate # придумать как сделать
             Balancing_Bank_Semafori(name)
             
+
+
+
+
 
 
             
